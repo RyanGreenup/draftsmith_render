@@ -61,7 +61,7 @@ pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> Str
         }
     }
 
-    // println!("{:#?}", root);
+    println!("{:#?}", root);
 
     let mut html = vec![];
     format_html(root, &Options::default(), &mut html).unwrap();

@@ -3,6 +3,16 @@ use draftsmith_render::replace_text;
 const DOC: &str = r#"
 # Heading
 
+# Admonitions
+
+<div class="tip">
+
+<p>Also maps closer to tailwind css (easier for me)</p>
+
+</div>
+
+# Basic Text
+
 This is my input.\
 
 1. Also [my](#) input.
@@ -16,14 +26,15 @@ This is some code
     - Normal
         - ![](https://example.com/image.png)
     - Figure
-        - ![image](https://example.com/image.png "this is an image xyz")
+        - ![notrim](https://example.com/image.png)
     - Wiki
-        - [[!Image|https://example.com/image.png]]
+        - [[!https://example.com/image.png]]
 - Link
     - Normal
         - [Link](https://example.com)
     - Wiki
         - [[Link|https://example.com]]
+        - [[Link]]
     - Transclusion
         - [[Link|https://example.com]]
 
