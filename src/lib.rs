@@ -1,4 +1,4 @@
-mod processor;
+pub mod processor;
 
 use comrak::nodes::NodeValue;
 use comrak::{format_html, parse_document, Arena, Options};
