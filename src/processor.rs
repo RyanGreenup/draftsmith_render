@@ -150,13 +150,18 @@ impl<'a> Processor<'a> {
     ///
     /// # Returns
     ///
-    /// A `String` containing the closing HTML div tag for the admonition.
+    /// A `String` containing the closing HTML tag for the admonition.
     fn handle_admonition_end(&mut self) -> String {
-        if self.div_stack.pop().is_some() {
-            "</div>\n".to_string()
-        } else {
-            String::from(":::\n")
-        }
+        self.div_stack.pop().map_or_else(
+            || String::from(":::\n"),
+            |class| {
+                match class.as_str() {
+                    "fold" => "</details>\n".to_string(),
+                    "summary" => "</summary>\n".to_string(),
+                    _ => "</div>\n".to_string(),
+                }
+            },
+        )
     }
 
     /// Handles the start of a code block.
