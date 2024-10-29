@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut markdown_processor = Processor::default();
     let document = markdown_processor.process(&test_string);
 
-    println!("Processed markdown:\n{}", document);
+    println!("{document}");
 
     Ok(())
 }

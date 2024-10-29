@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let html = replace_text(&test_string, orig, repl);
 
-    println!("Generated HTML:\n{}", html);
+    println!("{html}");
 
     Ok(())
 }

@@ -189,7 +189,7 @@ impl<'a> Processor<'a> {
                         return String::new();
                     } else {
                         format!(
-                        "<div class=\"rhai-display\">\n```rust\n{}\n```\n<div class=\"rhai-out\">\n```\n{}\n```\n</div>\n</div>\n",
+                        "<div class=\"rhai-display\">\n\n```rust\n{}\n```\n<div class=\"rhai-out\">\n\n```\n{}\n```\n</div>\n</div>\n",
                         code, results
                     )
                     }

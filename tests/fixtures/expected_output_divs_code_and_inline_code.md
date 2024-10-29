@@ -1,4 +1,3 @@
-Processed markdown:
 # Heading
 
 ## Details Boxes
