@@ -8,6 +8,14 @@ pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
 
+/// Configures the Comrak options for Markdown parsing and rendering.
+///
+/// This function sets various extension and rendering options to customize
+/// the behavior of the Markdown parser and HTML renderer.
+///
+/// # Arguments
+///
+/// * `options` - A mutable reference to a Comrak `Options` struct.
 fn config_opts(options: &mut Options) {
     options.extension.autolink = true;
     options.extension.footnotes = true;
