@@ -47,6 +47,8 @@ Inspired by MDX and Rmarkdown, this library allows you to evaluate Rhai code inl
 
 ### Inline Code
 
+> ![NOTE]
+> The code is marked as `rust` for syntax highlighting purposes.
 
 ```html
 <h2>Code Blocks</h2>
