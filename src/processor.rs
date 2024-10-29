@@ -205,7 +205,7 @@ impl<'a> Processor<'a> {
             self.tab_count = 0;
             "  </div>\n</div>\n".to_string()
         } else {
-            "  </div>\n\n".to_string()
+            "  </div>\n".to_string()
         }
     }
 
@@ -340,27 +340,20 @@ Tab content 3
 
         let expected_output = r#"<div role="tablist" class="tabs tabs-lifted">
 
-  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1"/>
   <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
-    Tab content 1
+Tab content 1
   </div>
 
-  <input
-    type="radio"
-    name="my_tabs_2"
-    role="tab"
-    class="tab"
-    aria-label="Tab 2"
-    checked="checked" />
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked="checked"/>
   <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
-    Tab content 2
+Tab content 2
   </div>
 
-  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3"/>
   <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
-    Tab content 3
+Tab content 3
   </div>
-
 </div>"#;
 
         let mut processor = Processor::default();
