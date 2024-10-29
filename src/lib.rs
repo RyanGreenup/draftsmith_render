@@ -34,6 +34,31 @@ fn config_opts(options: &mut Options) {
     options.render.unsafe_ = true;
 }
 
+/// Parses a Markdown document and converts it to HTML.
+///
+/// This function takes a Markdown string as input, processes it using custom rules,
+/// and then converts it to HTML using the Comrak library with customized options.
+///
+/// # Arguments
+///
+/// * `document` - A string slice that holds the Markdown content to be parsed.
+///
+/// # Returns
+///
+/// A `String` containing the parsed and formatted HTML output.
+///
+/// # Process
+///
+/// 1. Creates an Arena for memory management.
+/// 2. Configures Comrak options using `config_opts`.
+/// 3. Preprocesses the document using a custom `Processor`.
+/// 4. Parses the preprocessed document into an AST.
+/// 5. Iterates over the AST, applying custom transformations (e.g., for math elements).
+/// 6. Formats the modified AST into HTML.
+///
+/// # Note
+///
+/// This function uses unsafe Rust features through the Comrak library's options.
 pub fn parse_md_to_html(document: &str) -> String {
     // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
     let arena = Arena::new();
