@@ -53,7 +53,7 @@ impl<'a> Default for Processor<'a> {
             rhai_scope: Scope::new(),
             in_tabs: false,
             tab_count: 0,
-            tabs_closing: false, // Initialize the new field
+            tabs_closing: false,
         }
     }
 }
@@ -199,7 +199,11 @@ impl<'a> Processor<'a> {
 
     fn handle_tab(&mut self) -> String {
         self.tab_count += 1;
-        let checked = if self.tab_count == 2 { " checked=\"checked\"" } else { "" };
+        let checked = if self.tab_count == 2 {
+            " checked=\"checked\""
+        } else {
+            ""
+        };
         format!(
             "  <input type=\"radio\" name=\"my_tabs_2\" role=\"tab\" class=\"tab\" aria-label=\"Tab {}\"{}/>
   <div role=\"tabpanel\" class=\"tab-content bg-base-100 border-base-300 rounded-box p-6\">\n",
