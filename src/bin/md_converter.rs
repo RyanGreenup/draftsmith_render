@@ -28,7 +28,7 @@ fn main() -> io::Result<()> {
     };
 
     // Convert Markdown to HTML
-    let html_output = md_converter::parse_md_to_html(&input);
+    let html_output = draftsmith_render::parse_md_to_html(&input);
 
     // Write output to file or stdout
     if let Some(output_path) = cli.output {
