@@ -43,9 +43,9 @@ Inspired by MDX and Rmarkdown, this library allows you to evaluate Rhai code inl
     t
     ```
 
-### Inline Code
+    The sum of the first 10 numbers is λ#(s)# all together that is: λ#(t)#
 
-The sum of the first 10 numbers is λ#(s)# all together that is: λ#(t)#
+### Inline Code
 
 
 ```html
