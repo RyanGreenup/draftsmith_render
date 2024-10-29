@@ -29,6 +29,7 @@ pub struct Processor<'a> {
     rhai_scope: Scope<'a>,
     in_tabs: bool,
     tab_count: usize,
+    tabs_closing: bool, // Add this new field
 }
 
 impl<'a> Default for Processor<'a> {
@@ -52,6 +53,7 @@ impl<'a> Default for Processor<'a> {
             rhai_scope: Scope::new(),
             in_tabs: false,
             tab_count: 0,
+            tabs_closing: false, // Initialize the new field
         }
     }
 }
@@ -104,6 +106,11 @@ impl<'a> Processor<'a> {
     ///
     /// A `String` containing the processed line.
     fn process_line(&mut self, line: &str) -> String {
+        if self.tabs_closing && self.admonition_end_regex.is_match(line) {
+            self.tabs_closing = false;
+            return String::new(); // Ignore the final ":::" when closing a tabs block
+        }
+
         if self.tabs_start_regex.is_match(line) {
             self.handle_tabs_start()
         } else if self.code_start_regex.is_match(line) {
@@ -186,6 +193,7 @@ impl<'a> Processor<'a> {
     fn handle_tabs_start(&mut self) -> String {
         self.in_tabs = true;
         self.tab_count = 0;
+        self.tabs_closing = false; // Reset this flag when starting a new tabs block
         "<div role=\"tablist\" class=\"tabs tabs-lifted\">\n".to_string()
     }
 
@@ -203,6 +211,7 @@ impl<'a> Processor<'a> {
         if self.tab_count == 3 {
             self.in_tabs = false;
             self.tab_count = 0;
+            self.tabs_closing = true; // Set this flag when closing the tabs block
             "  </div>\n</div>\n".to_string()
         } else {
             "  </div>\n".to_string()
