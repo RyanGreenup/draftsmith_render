@@ -2,7 +2,7 @@
 
 ## Overview
 
-<p><img src="./assets/logo.png" style="float: left; width: 80px" /></p>
+<p><img src="./media/logo.png" style="float: left; width: 80px" /></p>
 
 This library preprocess markdown files, implementing custom features used by Draftsmith, a markdown-based knowledge management tool. It extends standard markdown syntax with some `<div>` blocks provided by DaisyUI and allows evaluating Rhai code inline.
 
