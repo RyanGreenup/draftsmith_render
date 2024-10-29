@@ -37,7 +37,8 @@ pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> Str
 
     // Preprocess the document
     let mut processor = Processor::default();
-    let document = processor.process(document).as_str();
+    let document = processor.process(document);
+    let document = document.as_str();
 
 
     // get the AST
@@ -69,10 +70,10 @@ pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> Str
         }
     }
 
-    println!("{:#?}", root);
+    // println!("{:#?}", root);
 
     let mut html = vec![];
-    format_html(root, &Options::default(), &mut html).unwrap();
+    format_html(root, &options, &mut html).unwrap();
 
     String::from_utf8(html).unwrap()
 }
