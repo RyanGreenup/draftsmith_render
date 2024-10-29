@@ -11,7 +11,7 @@ this latent will be preserved:
 
 Some content
 
-</div>
+:::
 
 A trailing block:
 
@@ -28,9 +28,9 @@ More content
 
 This is nested
 
-</div>
+:::
 
-</div>
+:::
 
 A latent block
 :::
