@@ -1,15 +1,54 @@
 use draftsmith_render::replace_text;
 
 const DOC: &str = r#"
+<div class="ugh">
+this is inline html
+</div>
+
+:::foo
+
+
+this is an admonition block
+
+
+:::
+
+
+
 # Heading
 
 # Admonitions
 
-<div class="tip">
 
-<p>Also maps closer to tailwind css (easier for me)</p>
 
-</div>
+:::tip
+This works
+
+    :::foo
+    Also maps closer to tailwind css (easier for me)
+    :::
+
+```rust
+fn main() {
+    println!("Hello, world!");
+}
+```
+
+:::
+
+This is some code:
+
+```markdown
+:::tip
+This works
+
+:::
+Also maps closer to tailwind css (easier for me)
+:::
+
+:::
+
+```
 
 # Basic Text
 
@@ -74,14 +113,9 @@ fn main() {
     let doc = DOC;
     let orig = "my";
     let repl = "your";
+    let test_string = std::fs::read_to_string("tests/fixtures/input_divs_code_and_inline_code.md").unwrap();
+    let expected = std::fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code.md").unwrap().trim_end_matches('\n').to_string();
     let html = replace_text(&doc, &orig, &repl);
 
-    println!("{}", html);
-    // Output:
-    //
-    // <p>This is your input.</p>
-    // <ol>
-    // <li>Also <a href="#">your</a> input.</li>
-    // <li>Certainly <em>your</em> input.</li>
-    // </ol>
+    // println!("{}", html);
 }
