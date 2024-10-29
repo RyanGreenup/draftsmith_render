@@ -78,18 +78,32 @@ pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> Str
     String::from_utf8(html).unwrap()
 }
 
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_processor_output() {
+
+        let test_string = fs::read_to_string("tests/fixtures/input_divs_code_and_inline_code.md")
+            .expect("Failed to read input fixture");
+
+        let expected = fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code_html.html")
+            .expect("Failed to read expected output fixture")
+            .trim_end_matches('\n')
+            .to_string();
+
+
+        // Create the HTML
+        let result = replace_text(&test_string, "", "").trim_end_matches('\n').to_string();
+
+        // save the file
+        std::fs::write("/tmp/f.html", result.clone()).expect("Unable to write file");
+
+        assert_eq!(result, expected, "Processor output did not match expected output");
     }
 }
-
-
-
-
 

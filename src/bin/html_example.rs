@@ -10,6 +10,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let test_string = fs::read_to_string(input_path)?;
 
+    // Create the html
     let html = replace_text(&test_string, orig, repl);
 
     println!("{html}");
