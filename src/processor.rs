@@ -130,16 +130,16 @@ impl<'a> Processor<'a> {
             return String::new(); // Return an empty string for empty admonitions
         }
         let html = match class {
-            "alert" => format!("<div role=\"alert\" class=\"alert alert-info\">"),
-            "info" => format!("<div class=\"alert alert-info\">"),
-            "success" => format!("<div class=\"alert alert-success\">"),
-            "warning" => format!("<div class=\"alert alert-warning\">"),
-            "error" => format!("<div class=\"alert alert-error\">"),
-            "tip" => format!("<div class=\"tip\">"),
-            "fold" => format!("<details class=\"my-details\">"),
-            "summary" => format!("<summary class=\"my-summary\">"),
-            "col" => format!("<div class=\"flex w-full flex-col lg:flex-row\">"),
-            "card" => format!("<div class=\"card bg-base-100 w-96 shadow-xl\">"),
+            "alert" => "<div role=\"alert\" class=\"alert alert-info\">".to_string(),
+            "info" => "<div class=\"alert alert-info\">".to_string(),
+            "success" => "<div class=\"alert alert-success\">".to_string(),
+            "warning" => "<div class=\"alert alert-warning\">".to_string(),
+            "error" => "<div class=\"alert alert-error\">".to_string(),
+            "tip" => "<div class=\"tip\">".to_string(),
+            "fold" => "<details class=\"my-details\">".to_string(),
+            "summary" => "<summary class=\"my-summary\">".to_string(),
+            "col" => "<div class=\"flex w-full flex-col lg:flex-row\">".to_string(),
+            "card" => "<div class=\"card bg-base-100 w-96 shadow-xl\">".to_string(),
             _ => format!("<div class=\"{}\">", class),
         };
         self.div_stack.push(class.to_string());
@@ -186,7 +186,7 @@ impl<'a> Processor<'a> {
 
                 if self.is_rhai_display {
                     if results.trim().is_empty() {
-                        return String::new();
+                        String::new()
                     } else {
                         format!(
                         "<div class=\"rhai-display\">\n\n```rust\n{}\n```\n<div class=\"rhai-out\">\n\n```\n{}\n```\n</div>\n</div>\n",
@@ -194,7 +194,7 @@ impl<'a> Processor<'a> {
                     )
                     }
                 } else {
-                    return String::new();
+                    String::new()
                 }
             } else {
                 String::new()
