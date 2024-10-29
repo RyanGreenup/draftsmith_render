@@ -2,7 +2,6 @@ pub mod processor;
 
 use comrak::nodes::NodeValue;
 use comrak::{format_html, parse_document, Arena, Options};
-use comrak::{ComrakOptions, ExtensionOptions, ParseOptions, RenderOptions};
 use processor::Processor;
 
 pub fn add(left: u64, right: u64) -> u64 {

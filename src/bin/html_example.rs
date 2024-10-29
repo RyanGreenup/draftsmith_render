@@ -3,8 +3,6 @@ use std::fs;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let orig = "my";
-    let repl = "your";
     let input_path = "tests/fixtures/input_divs_code_and_inline_code.md";
     let _expected_path = "tests/fixtures/expected_output_divs_code_and_inline_code.md";
 
