@@ -243,3 +243,29 @@ impl<'a> Processor<'a> {
         }
     }
 }
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_processor_output() {
+        let mut processor = Processor::default();
+
+        let test_string = fs::read_to_string("tests/fixtures/input_divs_code_and_inline_code.md")
+            .expect("Failed to read input fixture");
+
+        let expected = fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code.md")
+            .expect("Failed to read expected output fixture")
+            .trim_end_matches('\n')
+            .to_string();
+
+        let result = processor.process(&test_string);
+
+        assert_eq!(result, expected, "Processor output did not match expected output");
+    }
+}
+
