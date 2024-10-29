@@ -272,4 +272,55 @@ mod tests {
             "Processor output did not match expected output"
         );
     }
+
+    #[test]
+    fn test_tabs_processing() {
+        let input = r#":::tabs
+
+:::tab
+Tab content 1
+:::
+
+:::tab
+Tab content 2
+:::
+
+:::tab
+Tab content 3
+:::
+
+:::"#;
+
+        let expected_output = r#"<div role="tablist" class="tabs tabs-lifted">
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
+  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    Tab content 1
+  </div>
+
+  <input
+    type="radio"
+    name="my_tabs_2"
+    role="tab"
+    class="tab"
+    aria-label="Tab 2"
+    checked="checked" />
+  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    Tab content 2
+  </div>
+
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
+  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    Tab content 3
+  </div>
+</div>"#;
+
+        let mut processor = Processor::default();
+        let result = processor.process(input);
+
+        assert_eq!(
+            result.trim(),
+            expected_output.trim(),
+            "Tabs processing did not produce the expected output"
+        );
+    }
 }
