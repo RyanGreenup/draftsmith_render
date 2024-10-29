@@ -1,6 +1,6 @@
 use draftsmith_render::processor::Processor;
-use std::fs;
 use std::error::Error;
+use std::fs;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let input_path = "tests/fixtures/input_divs_code_and_inline_code.md";
@@ -16,4 +16,3 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-

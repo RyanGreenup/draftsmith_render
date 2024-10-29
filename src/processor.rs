@@ -154,12 +154,10 @@ impl<'a> Processor<'a> {
     fn handle_admonition_end(&mut self) -> String {
         self.div_stack.pop().map_or_else(
             || String::from(":::\n"),
-            |class| {
-                match class.as_str() {
-                    "fold" => "</details>\n".to_string(),
-                    "summary" => "</summary>\n".to_string(),
-                    _ => "</div>\n".to_string(),
-                }
+            |class| match class.as_str() {
+                "fold" => "</details>\n".to_string(),
+                "summary" => "</summary>\n".to_string(),
+                _ => "</div>\n".to_string(),
             },
         )
     }
@@ -249,8 +247,6 @@ impl<'a> Processor<'a> {
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -263,14 +259,17 @@ mod tests {
         let test_string = fs::read_to_string("tests/fixtures/input_divs_code_and_inline_code.md")
             .expect("Failed to read input fixture");
 
-        let expected = fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code.md")
-            .expect("Failed to read expected output fixture")
-            .trim_end_matches('\n')
-            .to_string();
+        let expected =
+            fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code.md")
+                .expect("Failed to read expected output fixture")
+                .trim_end_matches('\n')
+                .to_string();
 
         let result = processor.process(&test_string);
 
-        assert_eq!(result, expected, "Processor output did not match expected output");
+        assert_eq!(
+            result, expected,
+            "Processor output did not match expected output"
+        );
     }
 }
-

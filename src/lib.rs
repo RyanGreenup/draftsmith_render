@@ -39,13 +39,11 @@ pub fn parse_md_to_html(document: &str) -> String {
     let document = processor.process(document);
     let document = document.as_str();
 
-
     // get the AST
     let root = parse_document(&arena, document, &options);
 
     // Iterate over all the descendants of root.
     for node in root.descendants() {
-
         /*
         // Left in for reference
         if let NodeValue::Text(ref mut text) = node.data.borrow_mut().value {
@@ -81,8 +79,6 @@ pub fn parse_md_to_html(document: &str) -> String {
     String::from_utf8(html).unwrap()
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -90,23 +86,27 @@ mod tests {
 
     #[test]
     fn test_processor_output() {
-
         let test_string = fs::read_to_string("tests/fixtures/input_divs_code_and_inline_code.md")
             .expect("Failed to read input fixture");
 
-        let expected = fs::read_to_string("tests/fixtures/expected_output_divs_code_and_inline_code_html.html")
-            .expect("Failed to read expected output fixture")
-            .trim_end_matches('\n')
-            .to_string();
-
+        let expected = fs::read_to_string(
+            "tests/fixtures/expected_output_divs_code_and_inline_code_html.html",
+        )
+        .expect("Failed to read expected output fixture")
+        .trim_end_matches('\n')
+        .to_string();
 
         // Create the HTML
-        let result = parse_md_to_html(&test_string).trim_end_matches('\n').to_string();
+        let result = parse_md_to_html(&test_string)
+            .trim_end_matches('\n')
+            .to_string();
 
         // save the file
         std::fs::write("/tmp/f.html", result.clone()).expect("Unable to write file");
 
-        assert_eq!(result, expected, "Processor output did not match expected output");
+        assert_eq!(
+            result, expected,
+            "Processor output did not match expected output"
+        );
     }
 }
-
