@@ -4,14 +4,14 @@ use std::io::{self, Read, Write};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[clap(author, version, about, long_about = None)]
 struct Cli {
     /// Input Markdown file
-    #[arg(short, long)]
+    #[clap(short, long)]
     input: Option<PathBuf>,
 
     /// Output HTML file
-    #[arg(short, long)]
+    #[clap(short, long)]
     output: Option<PathBuf>,
 }
 
