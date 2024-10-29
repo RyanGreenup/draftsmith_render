@@ -7,13 +7,8 @@ edition = "2021"
 comrak = "0.29.0"
 regex = "1.11.1"
 rhai = "1.19.0"
-
+clap = { version = "4.5.20", features = ["derive"] }
 
 [[bin]]
 name = "md_converter"
 path = "src/bin/md_converter.rs"
-
-[dependencies.clap]
-version = "4.5.20"
-optional = true
-features = ["derive"]
