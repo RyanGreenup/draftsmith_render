@@ -10,6 +10,7 @@ const CODE_START_PATTERN: &str = r"^\s*```\{rhai\}$";
 const RHAI_DISPLAY_START_PATTERN: &str = r"^\s*```\{rhai-display\}$";
 const CODE_END_PATTERN: &str = r"^\s*```$";
 const LAMBDA_PATTERN: &str = r"λ#\(((?s).*?)\)#";
+const TABS_START_PATTERN: &str = r"^\s*:::tabs$";
 
 /// A processor for handling custom markdown-like syntax.
 pub struct Processor<'a> {
@@ -19,12 +20,15 @@ pub struct Processor<'a> {
     rhai_display_start_regex: Regex,
     code_end_regex: Regex,
     lambda_regex: Regex,
+    tabs_start_regex: Regex,
     div_stack: Vec<String>,
     eval_stack: bool,
     is_rhai_display: bool,
     contents: Vec<String>,
     rhai_engine: Engine,
     rhai_scope: Scope<'a>,
+    in_tabs: bool,
+    tab_count: usize,
 }
 
 impl<'a> Default for Processor<'a> {
@@ -39,12 +43,15 @@ impl<'a> Default for Processor<'a> {
                 .expect("Failed to compile regex"),
             code_end_regex: Regex::new(CODE_END_PATTERN).expect("Failed to compile regex"),
             lambda_regex: Regex::new(LAMBDA_PATTERN).expect("Failed to compile regex"),
+            tabs_start_regex: Regex::new(TABS_START_PATTERN).expect("Failed to compile regex"),
             div_stack: Vec::new(),
             eval_stack: false,
             is_rhai_display: false,
             contents: Vec::new(),
             rhai_engine: Engine::new(),
             rhai_scope: Scope::new(),
+            in_tabs: false,
+            tab_count: 0,
         }
     }
 }
@@ -97,7 +104,9 @@ impl<'a> Processor<'a> {
     ///
     /// A `String` containing the processed line.
     fn process_line(&mut self, line: &str) -> String {
-        if self.code_start_regex.is_match(line) {
+        if self.tabs_start_regex.is_match(line) {
+            self.handle_tabs_start()
+        } else if self.code_start_regex.is_match(line) {
             self.handle_code_start(false)
         } else if self.rhai_display_start_regex.is_match(line) {
             self.handle_code_start(true)
@@ -105,12 +114,20 @@ impl<'a> Processor<'a> {
             self.handle_code_end()
         } else if self.admonition_start_regex.is_match(line) {
             if let Some(caps) = self.admonition_start_regex.captures(line) {
-                self.handle_admonition_start(&caps[1])
+                if self.in_tabs && &caps[1] == "tab" {
+                    self.handle_tab()
+                } else {
+                    self.handle_admonition_start(&caps[1])
+                }
             } else {
                 String::new()
             }
         } else if self.admonition_end_regex.is_match(line) {
-            self.handle_admonition_end()
+            if self.in_tabs {
+                self.handle_tab_end()
+            } else {
+                self.handle_admonition_end()
+            }
         } else {
             self.handle_regular_line(line)
         }
@@ -152,14 +169,44 @@ impl<'a> Processor<'a> {
     ///
     /// A `String` containing the closing HTML tag for the admonition.
     fn handle_admonition_end(&mut self) -> String {
-        self.div_stack.pop().map_or_else(
-            || String::from(":::\n"),
-            |class| match class.as_str() {
-                "fold" => "</details>\n".to_string(),
-                "summary" => "</summary>\n".to_string(),
-                _ => "</div>\n".to_string(),
-            },
+        if self.in_tabs {
+            self.handle_tab_end()
+        } else {
+            self.div_stack.pop().map_or_else(
+                || String::from(":::\n"),
+                |class| match class.as_str() {
+                    "fold" => "</details>\n".to_string(),
+                    "summary" => "</summary>\n".to_string(),
+                    _ => "</div>\n".to_string(),
+                },
+            )
+        }
+    }
+
+    fn handle_tabs_start(&mut self) -> String {
+        self.in_tabs = true;
+        self.tab_count = 0;
+        "<div role=\"tablist\" class=\"tabs tabs-lifted\">\n".to_string()
+    }
+
+    fn handle_tab(&mut self) -> String {
+        self.tab_count += 1;
+        let checked = if self.tab_count == 2 { " checked=\"checked\"" } else { "" };
+        format!(
+            "  <input type=\"radio\" name=\"my_tabs_2\" role=\"tab\" class=\"tab\" aria-label=\"Tab {}\"{}/>
+  <div role=\"tabpanel\" class=\"tab-content bg-base-100 border-base-300 rounded-box p-6\">\n",
+            self.tab_count, checked
         )
+    }
+
+    fn handle_tab_end(&mut self) -> String {
+        if self.tab_count == 3 {
+            self.in_tabs = false;
+            self.tab_count = 0;
+            "  </div>\n</div>\n".to_string()
+        } else {
+            "  </div>\n\n".to_string()
+        }
     }
 
     /// Handles the start of a code block.
