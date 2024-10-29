@@ -27,7 +27,7 @@ fn config_opts(options: &mut Options) {
     options.render.unsafe_ = true;
 }
 
-pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> String {
+pub fn parse_md_to_html(document: &str) -> String {
     // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
     let arena = Arena::new();
 
@@ -46,10 +46,14 @@ pub fn replace_text(document: &str, orig_string: &str, replacement: &str) -> Str
 
     // Iterate over all the descendants of root.
     for node in root.descendants() {
+
+        /*
+        // Left in for reference
         if let NodeValue::Text(ref mut text) = node.data.borrow_mut().value {
             // If the node is a text node, perform the string replacement.
             *text = text.replace(orig_string, replacement);
         }
+        */
 
         // handle math (efficiently)
         if let NodeValue::Math(ref mut math) = node.data.borrow_mut().value {
@@ -98,7 +102,7 @@ mod tests {
 
 
         // Create the HTML
-        let result = replace_text(&test_string, "", "").trim_end_matches('\n').to_string();
+        let result = parse_md_to_html(&test_string).trim_end_matches('\n').to_string();
 
         // save the file
         std::fs::write("/tmp/f.html", result.clone()).expect("Unable to write file");

@@ -1,4 +1,4 @@
-use draftsmith_render::replace_text;
+use draftsmith_render::parse_md_to_html;
 use std::fs;
 use std::error::Error;
 
@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let test_string = fs::read_to_string(input_path)?;
 
     // Create the html
-    let html = replace_text(&test_string, orig, repl);
+    let html = parse_md_to_html(&test_string);
 
     println!("{html}");
 

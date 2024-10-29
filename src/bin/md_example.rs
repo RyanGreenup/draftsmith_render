@@ -1,4 +1,4 @@
-use draftsmith_render::replace_text;
+use draftsmith_render::parse_md_to_html;
 use draftsmith_render::processor::Processor;
 use std::fs;
 use std::error::Error;
