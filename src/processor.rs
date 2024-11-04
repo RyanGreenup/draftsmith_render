@@ -347,15 +347,15 @@ mod tests {
         
         let mut processor = Processor::new(Some(functions));
         
-        // Test numeric function
+        // Test numeric function - note the \n at the end
         let input1 = "Result: λ#(double(21))#";
-        let expected1 = "Result: 42\n";
+        let expected1 = "Result: 42\n";  // Added newline here
         let result1 = processor.process(input1);
         assert_eq!(result1, expected1);
         
         // Test string function
         let input2 = r#"Combined: λ#(concat("Hello ", "World"))#"#;
-        let expected2 = "Combined: Hello World\n";
+        let expected2 = "Combined: Hello World\n";  // Already had newline
         let result2 = processor.process(input2);
         assert_eq!(result2, expected2);
     }
