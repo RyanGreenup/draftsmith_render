@@ -38,14 +38,14 @@ impl<'a> Processor<'a> {
     /// Creates a new Processor with optional Rhai function registrations
     pub fn new(functions: Option<Vec<CustomFn>>) -> Self {
         let mut processor = Self::default();
-        
+
         // Register any provided functions with the Rhai engine
         if let Some(fns) = functions {
             for register_fn in fns {
                 register_fn(&mut processor.rhai_engine);
             }
         }
-        
+
         processor
     }
 }
@@ -333,9 +333,13 @@ mod tests {
     #[test]
     fn test_processor_with_custom_functions() {
         // Define test functions
-        fn double(x: i64) -> i64 { x * 2 }
-        fn concat(a: String, b: String) -> String { format!("{}{}", a, b) }
-        
+        fn double(x: i64) -> i64 {
+            x * 2
+        }
+        fn concat(a: String, b: String) -> String {
+            format!("{}{}", a, b)
+        }
+
         let functions: Vec<CustomFn> = vec![
             Box::new(|engine: &mut Engine| {
                 engine.register_fn("double", double);
@@ -344,18 +348,18 @@ mod tests {
                 engine.register_fn("concat", concat);
             }),
         ];
-        
+
         let mut processor = Processor::new(Some(functions));
-        
+
         // Test numeric function - note the \n at the end
         let input1 = "Result: λ#(double(21))#";
-        let expected1 = "Result: 42\n";  // Added newline here
+        let expected1 = "Result: 42"; // New lines are stripped
         let result1 = processor.process(input1);
         assert_eq!(result1, expected1);
-        
+
         // Test string function
         let input2 = r#"Combined: λ#(concat("Hello ", "World"))#"#;
-        let expected2 = "Combined: Hello World\n";  // Already had newline
+        let expected2 = "Combined: Hello World"; // New lines are stripped
         let result2 = processor.process(input2);
         assert_eq!(result2, expected2);
     }
@@ -372,6 +376,74 @@ mod tests {
                 .expect("Failed to read expected output fixture")
                 .trim_end_matches('\n')
                 .to_string();
+
+        let result = processor.process(&test_string);
+
+        assert_eq!(
+            result, expected,
+            "Processor output did not match expected output"
+        );
+    }
+
+    #[test]
+    fn test_processor_output_with_custom_rhai() {
+        // Register custom functions
+        // Define test functions
+        fn generate_ascii_diamond(size: i64) -> String {
+            if size == 0 {
+                println!("Size must be greater than 0.");
+                return "".to_string();
+            }
+
+            let mut output = String::new();
+
+            // Upper part of the diamond including the middle line
+            for i in 0..size {
+                let spaces = " ".repeat((size - i) as usize);
+                let stars = "*".repeat((2 * i + 1) as usize);
+                let line = format!("{spaces}{stars}\n");
+                output.push_str(&line);
+            }
+
+            // Lower part of the diamond
+            for i in (0..size - 1).rev() {
+                let spaces = " ".repeat((size - i) as usize);
+                let stars = "*".repeat((2 * i + 1) as usize);
+                let line = format!("{spaces}{stars}\n");
+                output.push_str(&line);
+            }
+            format!("<pre>\n{}\n</pre>", output)
+        }
+
+        fn double(x: i64) -> i64 {
+            x * 2
+        }
+        fn concat(a: String, b: String) -> String {
+            format!("{}{}", a, b)
+        }
+        let functions: Vec<CustomFn> = vec![
+            Box::new(|engine: &mut Engine| {
+                engine.register_fn("double", double);
+            }),
+            Box::new(|engine: &mut Engine| {
+                engine.register_fn("concat", concat);
+            }),
+            Box::new(|engine: &mut Engine| {
+                engine.register_fn("generate_ascii_diamond", generate_ascii_diamond);
+            }),
+        ];
+
+        let test_string = fs::read_to_string("tests/fixtures/custom_rhai_functions.md")
+            .expect("Failed to read input fixture");
+
+        let expected = fs::read_to_string("tests/fixtures/custom_rhai_functions_expected.md")
+            .expect("Failed to read expected output fixture")
+            .trim_end_matches('\n')
+            .to_string();
+
+        // Processor is Mutable as it stores the rhai environment scope
+        let mut processor = Processor::new(Some(functions));
+        let document = processor.process(&test_string);
 
         let result = processor.process(&test_string);
 
