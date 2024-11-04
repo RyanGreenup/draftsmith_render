@@ -4,7 +4,7 @@
 use regex::Regex;
 use rhai::{Engine, Scope};
 
-type RhaiFnDef = (&'static str, rhai::FnPtr);
+pub type CustomFn = Box<dyn Fn(&mut Engine)>;
 
 const ADMONITION_START_PATTERN: &str = r"^\s*:::([\w!\{\}-]+)$";
 const ADMONITION_END_PATTERN: &str = r"^\s*(:::)$";
@@ -36,13 +36,13 @@ pub struct Processor<'a> {
 
 impl<'a> Processor<'a> {
     /// Creates a new Processor with optional Rhai function registrations
-    pub fn new(functions: Option<Vec<RhaiFnDef>>) -> Self {
+    pub fn new(functions: Option<Vec<CustomFn>>) -> Self {
         let mut processor = Self::default();
         
         // Register any provided functions with the Rhai engine
         if let Some(fns) = functions {
-            for (name, func) in fns {
-                processor.rhai_engine.register_fn(name, func);
+            for register_fn in fns {
+                register_fn(&mut processor.rhai_engine);
             }
         }
         
@@ -332,13 +332,17 @@ mod tests {
 
     #[test]
     fn test_processor_with_custom_functions() {
-        // Test functions with different signatures
+        // Define test functions
         fn double(x: i64) -> i64 { x * 2 }
-        fn concat(a: &str, b: &str) -> String { format!("{}{}", a, b) }
+        fn concat(a: String, b: String) -> String { format!("{}{}", a, b) }
         
-        let functions = vec![
-            ("double", double as rhai::FnPtr),
-            ("concat", concat as rhai::FnPtr),
+        let functions: Vec<CustomFn> = vec![
+            Box::new(|engine: &mut Engine| {
+                engine.register_fn("double", double);
+            }),
+            Box::new(|engine: &mut Engine| {
+                engine.register_fn("concat", concat);
+            }),
         ];
         
         let mut processor = Processor::new(Some(functions));
@@ -350,7 +354,7 @@ mod tests {
         assert_eq!(result1, expected1);
         
         // Test string function
-        let input2 = "Combined: λ#(concat(\"Hello \", \"World\"))#";
+        let input2 = r#"Combined: λ#(concat("Hello ", "World"))#"#;
         let expected2 = "Combined: Hello World\n";
         let result2 = processor.process(input2);
         assert_eq!(result2, expected2);
