@@ -4,6 +4,8 @@
 use regex::Regex;
 use rhai::{Engine, Scope};
 
+type RhaiFnDef = (&'static str, rhai::FnPtr);
+
 const ADMONITION_START_PATTERN: &str = r"^\s*:::([\w!\{\}-]+)$";
 const ADMONITION_END_PATTERN: &str = r"^\s*(:::)$";
 const CODE_START_PATTERN: &str = r"^\s*```\{rhai\}$";
@@ -30,6 +32,22 @@ pub struct Processor<'a> {
     in_tabs: bool,
     tab_count: usize,
     tabs_closing: bool, // Add this new field
+}
+
+impl<'a> Processor<'a> {
+    /// Creates a new Processor with optional Rhai function registrations
+    pub fn new(functions: Option<Vec<RhaiFnDef>>) -> Self {
+        let mut processor = Self::default();
+        
+        // Register any provided functions with the Rhai engine
+        if let Some(fns) = functions {
+            for (name, func) in fns {
+                processor.rhai_engine.register_fn(name, func);
+            }
+        }
+        
+        processor
+    }
 }
 
 impl<'a> Default for Processor<'a> {
@@ -311,6 +329,32 @@ impl<'a> Processor<'a> {
 mod tests {
     use super::*;
     use std::fs;
+
+    #[test]
+    fn test_processor_with_custom_functions() {
+        // Test functions with different signatures
+        fn double(x: i64) -> i64 { x * 2 }
+        fn concat(a: &str, b: &str) -> String { format!("{}{}", a, b) }
+        
+        let functions = vec![
+            ("double", double as rhai::FnPtr),
+            ("concat", concat as rhai::FnPtr),
+        ];
+        
+        let mut processor = Processor::new(Some(functions));
+        
+        // Test numeric function
+        let input1 = "Result: λ#(double(21))#";
+        let expected1 = "Result: 42\n";
+        let result1 = processor.process(input1);
+        assert_eq!(result1, expected1);
+        
+        // Test string function
+        let input2 = "Combined: λ#(concat(\"Hello \", \"World\"))#";
+        let expected2 = "Combined: Hello World\n";
+        let result2 = processor.process(input2);
+        assert_eq!(result2, expected2);
+    }
 
     #[test]
     fn test_processor_output() {
