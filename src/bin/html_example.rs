@@ -3,15 +3,23 @@ use std::error::Error;
 use std::fs;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let input_path = "tests/fixtures/input_divs_code_and_inline_code.md";
-    let _expected_path = "tests/fixtures/expected_output_divs_code_and_inline_code.md";
+    // Get command-line arguments
+    let args: Vec<String> = std::env::args().collect();
 
+    if args.len() < 2 {
+        return Err("Please provide a filepath as the first argument".into());
+    }
+
+    // Use the second argument (index 1) as the file path
+    let input_path = &args[1];
+
+    // Read the file content into a string
     let test_string = fs::read_to_string(input_path)?;
 
-    // Create the html
+    // Create the HTML from the markdown string
     let html = parse_md_to_html(&test_string);
 
-    println!("{html}");
+    println!("{}", html);
 
     Ok(())
 }

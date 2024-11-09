@@ -1,7 +1,12 @@
 pub mod processor;
 
 use comrak::nodes::NodeValue;
-use comrak::{format_html, parse_document, Arena, Options};
+// https://raw.githubusercontent.com/kivikakk/comrak/f4853af61978e90d73f3b8c9a63be186d85c1e5c/examples/syntect.rs
+use comrak::plugins::syntect::SyntectAdapterBuilder;
+use comrak::{
+    format_html, format_html_with_plugins, markdown_to_html_with_plugins, parse_document, Arena,
+    Options, Plugins,
+};
 use processor::Processor;
 
 pub fn add(left: u64, right: u64) -> u64 {
@@ -65,6 +70,11 @@ pub fn process_md(document: &str) -> String {
 ///
 /// This function uses unsafe Rust features through the Comrak library's options.
 pub fn parse_md_to_html(document: &str) -> String {
+    // Set up plugins for syntax highlighting
+    // let adapter = builder.build();
+    let options = Options::default();
+    let mut plugins = Plugins::default();
+
     // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
     let arena = Arena::new();
 
@@ -111,8 +121,12 @@ pub fn parse_md_to_html(document: &str) -> String {
     // println!("{:#?}", root);
 
     let mut html = vec![];
-    format_html(root, &options, &mut html).unwrap();
+    // format_html(root, &options, &mut html).unwrap();
+    let builder = SyntectAdapterBuilder::new().theme("base16-ocean.dark");
+    let adapter = builder.build();
+    plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
+    format_html_with_plugins(root, &options, &mut html, &plugins).expect("Failed to format HTML");
     String::from_utf8(html).unwrap()
 }
 
