@@ -34,6 +34,11 @@ fn config_opts(options: &mut Options) {
     options.render.unsafe_ = true;
 }
 
+pub fn process_md(document: &str) -> String {
+    let mut processor = Processor::default();
+    processor.process(document)
+}
+
 /// Parses a Markdown document and converts it to HTML.
 ///
 /// This function takes a Markdown string as input, processes it using custom rules,
@@ -68,8 +73,7 @@ pub fn parse_md_to_html(document: &str) -> String {
     config_opts(&mut options);
 
     // Preprocess the document
-    let mut processor = Processor::default();
-    let document = processor.process(document);
+    let document = process_md(document);
     let document = document.as_str();
 
     // get the AST
