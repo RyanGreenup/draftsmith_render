@@ -386,6 +386,23 @@ mod tests {
     }
 
     #[test]
+    fn test_processor_output_with_codeblocks() {
+        let mut processor = Processor::default();
+
+        let test_string = fs::read_to_string("tests/fixtures/code_block.md")
+            .expect("Failed to read input fixture");
+
+        let expected = test_string.clone();
+
+        let result = processor.process(&test_string);
+
+        assert_eq!(
+            result, expected,
+            "Processor output did not match expected output"
+        );
+    }
+
+    #[test]
     fn test_processor_output_with_custom_rhai() {
         // Register custom functions
         // Define test functions
