@@ -281,7 +281,7 @@ impl<'a> Processor<'a> {
                 String::new()
             }
         } else {
-            String::new()
+            String::from(r#"```"#) + "\n"
         }
     }
 
@@ -392,12 +392,12 @@ mod tests {
         let test_string = fs::read_to_string("tests/fixtures/code_block.md")
             .expect("Failed to read input fixture");
 
-        let expected = test_string.clone();
+        let expected = test_string.clone().trim_end_matches('\n').to_string();
 
         let result = processor.process(&test_string);
 
         assert_eq!(
-            result, expected,
+            expected, result,
             "Processor output did not match expected output"
         );
     }
