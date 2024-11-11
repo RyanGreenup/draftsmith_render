@@ -2,6 +2,7 @@
 //! with custom admonitions and code blocks.
 
 use regex::Regex;
+use rhai::packages::{BasicMathPackage, CorePackage, Package};
 use rhai::{Engine, Scope};
 
 pub type CustomFn = Box<dyn Fn(&mut Engine)>;
@@ -67,7 +68,13 @@ impl<'a> Default for Processor<'a> {
             eval_stack: false,
             is_rhai_display: false,
             contents: Vec::new(),
-            rhai_engine: Engine::new(),
+            rhai_engine: {
+                let mut engine = Engine::new_raw();
+                // Register the package into the 'Engine'.
+                CorePackage::new().register_into_engine(&mut engine);
+                BasicMathPackage::new().register_into_engine(&mut engine);
+                engine
+            },
             rhai_scope: Scope::new(),
             in_tabs: false,
             tab_count: 0,
@@ -178,7 +185,7 @@ impl<'a> Processor<'a> {
             "warning" => "<div class=\"alert alert-warning\">".to_string(),
             "error" => "<div class=\"alert alert-error\">".to_string(),
             "tip" => "<div class=\"tip\">".to_string(),
-            "fold" => "<details class=\"my-details\">".to_string(),
+            "fold" => "<details class=\"my-details\"><summary>📂</summary>".to_string(),
             "summary" => "<summary class=\"my-summary\">".to_string(),
             "col" => "<div class=\"flex w-full flex-col lg:flex-row\">".to_string(),
             "card" => "<div class=\"card bg-base-100 w-96 shadow-xl\">".to_string(),
@@ -330,6 +337,14 @@ mod tests {
     use super::*;
     use std::fs;
 
+    /*
+    The example binary can be helpful here for generating output to test against.
+    cargo run --bin md_converter -- \
+        -f markdown \
+        -i ../../tests/fixtures/input_divs_code_and_inline_code.md \
+        -o ../../tests/fixtures/expected_output_divs_code_and_inline_code.md
+    */
+
     #[test]
     fn test_processor_with_custom_functions() {
         // Define test functions
@@ -460,7 +475,6 @@ mod tests {
 
         // Processor is Mutable as it stores the rhai environment scope
         let mut processor = Processor::new(Some(functions));
-        let document = processor.process(&test_string);
 
         let result = processor.process(&test_string);
 

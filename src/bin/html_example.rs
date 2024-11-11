@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let test_string = fs::read_to_string(input_path)?;
 
     // Create the HTML from the markdown string
-    let html = parse_md_to_html(&test_string);
+    let html = parse_md_to_html(&test_string, Option::None);
 
     println!("{}", html);
 

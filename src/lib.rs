@@ -3,11 +3,8 @@ pub mod processor;
 use comrak::nodes::NodeValue;
 // https://raw.githubusercontent.com/kivikakk/comrak/f4853af61978e90d73f3b8c9a63be186d85c1e5c/examples/syntect.rs
 use comrak::plugins::syntect::SyntectAdapterBuilder;
-use comrak::{
-    format_html, format_html_with_plugins, markdown_to_html_with_plugins, parse_document, Arena,
-    Options, Plugins,
-};
-use processor::Processor;
+use comrak::{format_html_with_plugins, parse_document, Arena, Options, Plugins};
+use processor::{CustomFn, Processor};
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
@@ -39,8 +36,8 @@ fn config_opts(options: &mut Options) {
     options.render.unsafe_ = true;
 }
 
-pub fn process_md(document: &str) -> String {
-    let mut processor = Processor::default();
+pub fn process_md(document: &str, functions: Option<Vec<CustomFn>>) -> String {
+    let mut processor = Processor::new(functions);
     processor.process(document)
 }
 
@@ -69,10 +66,10 @@ pub fn process_md(document: &str) -> String {
 /// # Note
 ///
 /// This function uses unsafe Rust features through the Comrak library's options.
-pub fn parse_md_to_html(document: &str) -> String {
+pub fn parse_md_to_html(document: &str, functions: Option<Vec<CustomFn>>) -> String {
     // Set up plugins for syntax highlighting
     // let adapter = builder.build();
-    let options = Options::default();
+    let _options = Options::default();
     let mut plugins = Plugins::default();
 
     // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
@@ -83,7 +80,7 @@ pub fn parse_md_to_html(document: &str) -> String {
     config_opts(&mut options);
 
     // Preprocess the document
-    let document = process_md(document);
+    let document = process_md(document, functions);
     let document = document.as_str();
 
     // get the AST
@@ -148,7 +145,7 @@ mod tests {
         .to_string();
 
         // Create the HTML
-        let result = parse_md_to_html(&test_string)
+        let result = parse_md_to_html(&test_string, Option::None)
             .trim_end_matches('\n')
             .to_string();
 

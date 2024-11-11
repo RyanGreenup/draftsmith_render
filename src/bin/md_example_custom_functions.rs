@@ -1,5 +1,5 @@
 use draftsmith_render::processor::Processor;
-use rhai::{Engine, Scope};
+use rhai::Engine;
 use std::error::Error;
 use std::fs;
 pub type CustomFn = Box<dyn Fn(&mut Engine)>;
