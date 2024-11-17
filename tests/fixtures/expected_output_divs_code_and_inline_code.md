@@ -20,11 +20,11 @@ A trailing block:
 Some other text
 
 
-<div class="alert alert-info">
+<div class="admonition note">
 
 More content
 
-<div class="tip">
+<div class="admonition tip">
 
 This is nested
 

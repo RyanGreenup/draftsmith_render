@@ -108,7 +108,26 @@ The HTML output is unsanitized by default. This is intentional as this software 
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Development
+
+When developing, you can run the tests with:
+
+```bash
+cargo test
+```
+
+The example binary can be helpful here for generating output to test against.
+
+``` bash
+cargo run --bin md_converter -- \
+    -f markdown \
+    -i ../../tests/fixtures/input_divs_code_and_inline_code.md \
+    -o ../../tests/fixtures/expected_output_divs_code_and_inline_code.md
+```
+
+
 ## License
 
 GPL
+
 

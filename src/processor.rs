@@ -180,11 +180,11 @@ impl<'a> Processor<'a> {
         }
         let html = match class {
             "alert" => "<div role=\"alert\" class=\"alert alert-info\">".to_string(),
-            "info" => "<div class=\"alert alert-info\">".to_string(),
+            "info" => "<div class=\"admonition note\">".to_string(),
             "success" => "<div class=\"alert alert-success\">".to_string(),
-            "warning" => "<div class=\"alert alert-warning\">".to_string(),
-            "error" => "<div class=\"alert alert-error\">".to_string(),
-            "tip" => "<div class=\"tip\">".to_string(),
+            "warning" => "<div class=\"admonition important\">".to_string(),
+            "error" => "<div class=\"admonition warning\">".to_string(),
+            "tip" => "<div class=\"admonition tip\">".to_string(),
             "fold" => "<details class=\"my-details\"><summary>📂</summary>".to_string(),
             "summary" => "<summary class=\"my-summary\">".to_string(),
             "col" => "<div class=\"flex w-full flex-col lg:flex-row\">".to_string(),
