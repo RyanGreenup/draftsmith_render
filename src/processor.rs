@@ -33,6 +33,7 @@ pub struct Processor<'a> {
     in_tabs: bool,
     tab_count: usize,
     tabs_closing: bool, // Add this new field
+    current_indent: String,
 }
 
 impl<'a> Processor<'a> {
@@ -79,6 +80,7 @@ impl<'a> Default for Processor<'a> {
             in_tabs: false,
             tab_count: 0,
             tabs_closing: false,
+            current_indent: String::new(),
         }
     }
 }
@@ -255,7 +257,14 @@ impl<'a> Processor<'a> {
     fn handle_code_start(&mut self, is_display: bool) -> String {
         self.eval_stack = true;
         self.is_rhai_display = is_display;
-        self.contents.clear(); // Clear any previous contents
+        self.contents.clear();
+        // Store the indentation by counting leading spaces
+        if let Some(last_line) = self.contents.last() {
+            self.current_indent = " ".repeat(last_line.chars().take_while(|c| c.is_whitespace()).count());
+        } else {
+            // If we're at a new line, count the spaces from the current line
+            self.current_indent = " ".repeat(self.contents.len());
+        }
         String::new()
     }
 
@@ -288,7 +297,7 @@ impl<'a> Processor<'a> {
                 String::new()
             }
         } else {
-            String::from(r#"```"#) + "\n"
+            format!("{}{}\n", self.current_indent, "```")
         }
     }
 
@@ -304,8 +313,12 @@ impl<'a> Processor<'a> {
     fn handle_regular_line(&mut self, line: &str) -> String {
         if self.eval_stack {
             self.contents.push(line.to_string());
-            String::new() // Return an empty string when in eval_stack mode
+            String::new()
         } else {
+            // Count leading spaces if this is the first line after a code block
+            if line.trim_start().starts_with("```") {
+                self.current_indent = " ".repeat(line.chars().take_while(|c| c.is_whitespace()).count());
+            }
             let mut result = String::new();
             let mut last_end = 0;
             let mut scope = self.rhai_scope.clone();
@@ -527,6 +540,32 @@ Tab content 3
             result.trim(),
             expected_output.trim(),
             "Tabs processing did not produce the expected output"
+        );
+    }
+
+    #[test]
+    fn test_list_tems() {
+        let input = r#"
+- item 1
+    - item 2
+        ```python
+        print("Under Item 2")
+        ```
+    - item 3
+        ```python
+        print("Under Item 3")
+        ```
+"#;
+
+        let input = input.trim();
+        let expected_output = input.clone();
+        let mut processor = Processor::default();
+        let result = processor.process(input);
+
+        assert_eq!(
+            result.trim(),
+            expected_output.trim(),
+            "List items did not produce the expected output"
         );
     }
 }
